@@ -1,7 +1,12 @@
+import sys
+sys.path.append('/Users/kamile/Desktop/Bachelor-Project/BSc-project')
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 import torch
 import numpy as np
 from paper import text
+
+model = AutoModelForSequenceClassification.from_pretrained("rong4ivy/EnglishEssay_Scoring_LM")
+tokenizer = AutoTokenizer.from_pretrained("rong4ivy/EnglishEssay_Scoring_LM")
 
 def split_overlap(tensor, chunk_size, stride, min_chunk_len):
     result = [tensor[i : i + chunk_size] for i in range(0, len(tensor), stride)]
@@ -38,8 +43,7 @@ def transform_text(text, tokenizer, chunk_size, stride, min_chunk_len):
     
 
 
-model = AutoModelForSequenceClassification.from_pretrained("rong4ivy/EnglishEssay_Scoring_LM")
-tokenizer = AutoTokenizer.from_pretrained("rong4ivy/EnglishEssay_Scoring_LM")
+
 
 
 encoded_input = tokenizer(text, return_tensors='pt', add_special_tokens=False, truncation=False)
@@ -48,12 +52,6 @@ model.eval()
 
 input_ids, attention_mask = transform_text(text, tokenizer, 510, 510, 1)
 print(input_ids.shape)
-
-# outputs = model(encoded_input["input_ids"], encoded_input["attention_mask"])
-
-# tensor = encoded_input["input_ids"][0]
-# splitted = split_overlap(tensor, 5, 3, 3)
-# print(splitted)
 
 with torch.no_grad():
     outputs = model(input_ids, attention_mask)

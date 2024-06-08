@@ -148,4 +148,5 @@ def get_store_text():
 
 #print(get_text("A comprehensive survey on support vector machine classification Applications challenges and trends.pdf"))
 # get_store_text()
-print(fetch_db())      
+print(fetch_db()["text"][1])  
+print(fetch_db()["doi"][1])       
