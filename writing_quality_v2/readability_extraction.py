@@ -63,5 +63,5 @@ def readability():
     
 
 #print(compute_readability_metrics(text))
-readability()
+#readability()
 print(clean_text.fetch_db())

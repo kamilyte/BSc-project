@@ -25,35 +25,35 @@ def fetch_db():
         
         # cur.execute("""
         #             ALTER TABLE scopus_database
-        #             ADD flesch_reading_ease REAL;
+        #             ADD cohesion REAL;
         #             """)
         
         # cur.execute("""
         #             ALTER TABLE scopus_database
-        #             ADD flesch_kincaid_grade REAL;
+        #             ADD syntax REAL;
         #             """)
         
         # cur.execute("""
         #             ALTER TABLE scopus_database
-        #             ADD gunning_fog_index REAL;
+        #             ADD vocabulary REAL;
         #             """)
         
         # cur.execute("""
         #             ALTER TABLE scopus_database
-        #             ADD smog_index REAL;
+        #             ADD phraseology REAL;
         #             """)
         
         # cur.execute("""
         #             ALTER TABLE scopus_database
-        #             ADD automated_readability_index REAL;
+        #             ADD grammar REAL;
         #             """)
         
         # cur.execute("""
         #             ALTER TABLE scopus_database
-        #             ADD coleman_liau_index REAL;
+        #             ADD conventions REAL;
         #             """)
         
-        #df = pd.read_sql_query("""SELECT * FROM scopus_database WHERE max_h_index IS NOT NULL AND text IS NOT NULL;""",conn)
+        df = pd.read_sql_query("""SELECT * FROM scopus_database WHERE max_h_index IS NOT NULL AND text IS NOT NULL;""",conn)
         
         
         conn.commit()
@@ -67,7 +67,7 @@ def fetch_db():
             conn.close()
             print("Database connection closed")
             
-    #return df
+    return df
 
 def replace_unnecessary_chars(text):
     cleaned_text = text.replace('- ', '')
