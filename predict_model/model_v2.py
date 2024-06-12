@@ -14,6 +14,9 @@ from sklearn.metrics import median_absolute_error
 from sklearn.metrics import explained_variance_score
 from sklearn.metrics import mean_squared_log_error
 #from sklearn.metrics import huber_loss
+from sklearn.linear_model import Ridge
+from matplotlib import pyplot as plt
+import seaborn as sns
 
 def get_relevant_columns():
     df = normalised_data()
@@ -22,7 +25,7 @@ def get_relevant_columns():
     df = df.drop(["doi", "title", "year", "query", "total_citations", "limited_citations", "impact", "age", "normalised_first_year", "normalised_second_year", "text"], axis=1)
     return df
 
-def huber_loss(y_pred, y_true, delta=1.0):
+def huber_loss(y_pred, y_true, delta=1):
     error = y_pred - y_true
     abs_error = np.abs(error)
     quadratic = np.minimum(abs_error, delta)
@@ -34,7 +37,7 @@ def perform_regression():
     #print(df.head())
     #X = df[['avg_h_index', 'usage', 'captures', 'mentions', 'social_media', 'max_h_index', 'flesch_reading_ease', 'flesch_kincaid_grade', 'gunning_fog_index', 'smog_index', 'automated_readability_index', 'coleman_liau_index', 'cohesion', 'syntax', 'vocabulary', 'phraseology', 'grammar', 'conventions', 'normalised_first_year', 'normalised_second_year']]
     #X = df[['normalised_first_year', 'normalised_second_year', 'avg_h_index', 'max_h_index']]
-    X = df[['first_year_citations', 'second_year_citations', 'avg_h_index', 'max_h_index']]
+    X = df[['first_year_citations', 'second_year_citations', 'avg_h_index', 'max_h_index', 'flesch_reading_ease', 'flesch_kincaid_grade', 'gunning_fog_index', 'smog_index', 'automated_readability_index', 'coleman_liau_index', 'cohesion', 'syntax', 'vocabulary', 'phraseology', 'grammar', 'conventions']]
     y = df[["normalised_citations"]]
     # df_train, df_temp, y_train, y_temp = train_test_split(X,
     #                                                       y,
@@ -65,7 +68,7 @@ def perform_regression():
     mape = np.mean(np.abs((y_test - y_pred) / y_test)) * 100
     median_ae = median_absolute_error(y_test, y_pred)
     evs = explained_variance_score(y_test, y_pred)
-    msle = mean_squared_log_error(y_test, y_pred)
+    #msle = mean_squared_log_error(y_test, y_pred)
     huber = huber_loss(y_pred, y_test)
     
     print(f'Mean Squared Error: {mse}')
@@ -74,16 +77,45 @@ def perform_regression():
     print(f'Mean Absolute Percentage Error: {mape}')
     print(f'Median Absolute Error: {median_ae}')
     print(f'Explained Variance Score: {evs}')
-    print(f'Mean Squared Logarithmic Error: {msle}')
+    #print(f'Mean Squared Logarithmic Error: {msle}')
     print(f'Huber Loss: {huber}')
     
     # scoring = "neg_root_mean_squared_error"
     # scores = cross_validate(model, X_train, y_train, scoring=scoring, return_estimator=True)
     # print(scores)
     
-    new_paper = [[1, 5, 19, 32]]
+    #new_paper = [[1, 5, 19, 32, 40, 13, 12, 14, 15, 13, 5, 5, 6, 6, 5, 5]]
+    new_paper = [[18, 541, 28, 31, 45, 11, 9, 13, 13, 13, 6, 6, 6, 6, 6, 5]]
     predicted_citations = model.predict(new_paper)
     print(f'Predicted future citation count: {predicted_citations[0]}')
+    
+    # plt.scatter(X_train, y_train,color='g')
+    # plt.plot(X_test, y_pred,color='k')
+    # plt.show()  
+    
+    y_train_pred = model.predict(X_train)
+    y_test_pred = model.predict(X_test) 
+    
+    plt.figure(figsize=(12, 6))
+    plt.subplot(1, 2, 1)
+    sns.residplot(x=y_train_pred, y=y_train - y_train_pred, lowess=True, line_kws={'color': 'red'})
+    
+    plt.xlabel('Predicted values')
+    plt.ylabel('Residuals')
+    plt.title('Residuals vs Predicted (Training)')
+
+    # Residual plot for testing data
+    plt.subplot(1, 2, 2)
+    sns.residplot(x=y_test_pred, y=y_test - y_test_pred, lowess=True, line_kws={'color': 'red'})
+    plt.xlabel('Predicted values')
+    plt.ylabel('Residuals')
+    plt.title('Residuals vs Predicted (Testing)')
+
+    plt.tight_layout()
+    plt.show()
+    
+    
+
     
 
     
